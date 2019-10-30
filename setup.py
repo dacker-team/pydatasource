@@ -15,6 +15,8 @@ setup(
     packages=find_packages(exclude=('tests', 'docs')),
     python_requires='>=3',
     install_requires=[
+        "dbstream>=0.0.13",
+        "PyYAML>=5.1.2"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
