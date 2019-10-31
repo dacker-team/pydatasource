@@ -1,10 +1,7 @@
-import re
 from string import Template
-
 import datetime
 import yaml
 from dbstream import DBStream
-
 from pydatasource.core.snippet import treat_all_snippet
 
 
@@ -55,7 +52,8 @@ class DataSource:
                     if value == "now":
                         value = str(datetime.datetime.now())[:10]
                     dict_params.update({params.upper(): value})
-            dict_params.update(treat_all_snippet(query_path=query_path, layer=layer_name, dict_params=dict_params))
+            dict_params.update(treat_all_snippet(datasource_path=self.path_to_datasource_folder, query_path=query_path,
+                                                 layer=layer_name, dict_params=dict_params))
             filled_query = query_template.substitute(dict_params)
             self.dbstream.execute_query(filled_query)
             print(dict_params["TABLE_NAME"] + " created")
@@ -68,4 +66,5 @@ class DataSource:
     def function_compute(self, layer_name):
         def f():
             self.compute(layer_name)
+
         return f
