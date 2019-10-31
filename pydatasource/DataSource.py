@@ -17,7 +17,7 @@ class DataSource:
         self.schema_prefix = schema_prefix
 
     def _build_folder_path(self, layer_name):
-        return self.path_to_datasource_folder + layer_name + "/"
+        return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
 
     def _create_view_gds(self, layer_name, table_name):
         pass
