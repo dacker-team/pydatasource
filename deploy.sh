@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-sed  -i -e "s/$1/$2/g" setup.py
-rm setup.py-e
+#sed  -i -e "sx/$1/$2/g" setup.py
+#rm setup.py-e
 
 git add .
-git ci -m "$3"
+git ci -m "$1"
 git push
 
 rm -r dist

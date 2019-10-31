@@ -5,7 +5,7 @@ with open('README.rst') as f:
 
 setup(
     name='pydatasource',
-    version='0.0.2',
+    version='0.0.3',
     description='Easily manage a dataflow',
     long_description=readme,
     author='Dacker',
@@ -15,7 +15,7 @@ setup(
     packages=find_packages(exclude=('tests', 'docs')),
     python_requires='>=3',
     install_requires=[
-        "dbstream>=0.0.23",
+        "dbstream>=0.0.13",
         "PyYAML>=5.1.2"
     ],
     classifiers=[
