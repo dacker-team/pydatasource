@@ -31,7 +31,7 @@ class DataSource:
         if not queries:
             print("No queries set up in config file")
             return 0
-        query_list = [query_name] if query_name else list(queries.keys)
+        query_list = [query_name] if query_name else list(queries.keys())
         for query in query_list:
             query_config = queries[query]
             if query_config.get("template"):
