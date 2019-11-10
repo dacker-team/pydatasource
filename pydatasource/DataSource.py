@@ -50,7 +50,7 @@ class DataSource:
                 for params in query_params.keys():
                     value = query_params[params]
                     if value == "now":
-                        value = str(datetime.datetime.now())[:10]
+                        value = "'" + str(datetime.datetime.now())[:19] + "'"
                     dict_params.update({params.upper(): value})
             dict_params.update(treat_all_snippet(datasource_path=self.path_to_datasource_folder, query_path=query_path,
                                                  layer=layer_name, dict_params=dict_params))
