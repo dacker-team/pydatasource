@@ -1,3 +1,4 @@
+import time
 from string import Template
 import datetime
 import yaml
@@ -55,7 +56,14 @@ class DataSource:
             dict_params.update(treat_all_snippet(datasource_path=self.path_to_datasource_folder, query_path=query_path,
                                                  layer=layer_name, dict_params=dict_params))
             filled_query = query_template.substitute(dict_params)
-            self.dbstream.execute_query(filled_query)
+            try:
+                self.dbstream.execute_query(filled_query)
+            except Exception as e:
+                sec_before_retry = 15
+                print(str(e))
+                print("Retry in %s s..." % str(sec_before_retry))
+                time.sleep(sec_before_retry)
+                self.dbstream.execute_query(filled_query)
             print(dict_params["TABLE_NAME"] + " created")
             if query_create_view_gds:
                 self._create_view_gds(layer_name, table_name)
