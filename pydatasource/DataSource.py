@@ -1,4 +1,5 @@
 import re
+import time
 from string import Template
 import datetime
 import yaml
@@ -82,7 +83,15 @@ class DataSource:
             filled_query, query_create_view_gds, dict_params, table_name = self._filled_query(queries, query,
                                                                                               folder_path, schema_name,
                                                                                               layer_name)
-            self.dbstream.execute_query(filled_query)
+            try:
+                self.dbstream.execute_query(filled_query)
+            except Exception as e:
+                sec_before_retry = 15
+                print(str(e))
+                print("Retry in %s s..." % str(sec_before_retry))
+                time.sleep(sec_before_retry)
+                self.dbstream.execute_query(filled_query)
+
             print(dict_params["TABLE_NAME"] + " created")
             if query_create_view_gds:
                 self._create_view_gds(layer_name, table_name)
