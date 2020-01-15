@@ -107,7 +107,7 @@ class DataSource:
                                                                                               layer_name)
 
             r = r + _doc_treat_query(filled_query, layer_name, table_name)
-        return 0
+        return r
 
     pass
 
