@@ -10,7 +10,7 @@ def detect_snippet(query_path):
 
 def treat_snippet(datasource_path, layer, snippet):
     snippet_name = (snippet.split('__')[0]).lower()
-    path = datasource_path + layer + '/sql_snippet/' + snippet_name + '.sql'
+    path = datasource_path + 'layers/' + layer + '/sql_snippet/' + snippet_name + '.sql'
     try:
         snippet_template = Template(open(path).read())
     except FileNotFoundError:
