@@ -7,7 +7,7 @@ from dbstream import DBStream
 from pydatasource.core.snippet import treat_all_snippet
 
 
-def _doc_treat_query(filled_query, query_set_name, table_name):
+def _doc_treat_query(filled_query, schema_name, table_name):
     filled_query = filled_query.replace('\n', ' ')
     a = re.split('from | join ', filled_query.lower())
     all_tuple = []
@@ -15,10 +15,10 @@ def _doc_treat_query(filled_query, query_set_name, table_name):
         aa = i.split(' ')
         n = aa[0]
         if '.' in n:
-            all_tuple.append({'schema_output': 'datasource_' + query_set_name, 'table_output': table_name,
+            all_tuple.append({'schema_output': schema_name, 'table_output': table_name,
                               'schema_input': n.split('.')[0],
                               'table_input': n.split('.')[1],
-                              "schema_table_output": 'datasource_' + query_set_name + '.' + table_name,
+                              "schema_table_output": schema_name + '.' + table_name,
                               "schema_table_input": n})
     return all_tuple
 
@@ -106,7 +106,7 @@ class DataSource:
                                                                                               schema_name,
                                                                                               layer_name)
 
-            r = r + _doc_treat_query(filled_query, layer_name, table_name)
+            r = r + _doc_treat_query(filled_query, schema_name, table_name)
         return r
 
     pass
