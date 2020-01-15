@@ -14,7 +14,7 @@ def treat_snippet(datasource_path, layer, snippet):
     try:
         snippet_template = Template(open(path).read())
     except FileNotFoundError:
-        path = datasource_path + '/sql_snippet/' + snippet_name + '.sql'
+        path = datasource_path + 'sql_snippet/' + snippet_name + '.sql'
         snippet_template = Template(open(path).read())
     snippet_str = open(path).read()
     mi = re.findall(r"\$(.*?)( |$)", str(snippet_str))
