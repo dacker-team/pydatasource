@@ -19,7 +19,7 @@ def _doc_treat_query(filled_query, schema_name, table_name):
                               'schema_input': n.split('.')[0].replace(')', ''),
                               'table_input': n.split('.')[1].replace(')', ''),
                               "schema_table_output": schema_name + '.' + table_name,
-                              "schema_table_input": n.replace(')','')})
+                              "schema_table_input": n.replace(')', '')})
     return all_tuple
 
 
@@ -37,8 +37,19 @@ class DataSource:
     def _build_folder_path(self, layer_name):
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
 
-    def _create_view_gds(self, layer_name, table_name):
-        pass
+    def _create_redshift_beautiful_view(self, table_name, schema_name):
+        query = '''
+            SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name='%s' and table_schema='%s'
+            ''' % (table_name, schema_name)
+        result = self.dbstream.execute_query(query)
+        columns_list = [""" %s as "%s" """ % (c["column_name"], c["column_name"].replace("_", " ")) for c in result]
+        view_name = '%s.%s_%s' % (schema_name, table_name, 'beautiful')
+        columns = ','.join(columns_list)
+        view_query = '''DROP VIEW IF EXISTS %s ;CREATE VIEW %s as (SELECT %s FROM %s.%s)''' \
+                     % (view_name, view_name, columns, schema_name, table_name)
+        self.dbstream.execute_query(view_query)
 
     def _get_query_list(self, layer_name, query_name=None):
         folder_path = self._build_folder_path(layer_name)
@@ -60,7 +71,6 @@ class DataSource:
             query_template_file_name = query
         query_path = folder_path + "query/" + query_template_file_name + ".sql"
         query_params = query_config.get("query_params")
-        query_create_view_gds = query_config.get('gds')
         query_template = Template(open(query_path).read())
         table_name = query
         dict_params = dict()
@@ -75,14 +85,14 @@ class DataSource:
         dict_params.update(treat_all_snippet(datasource_path=self.path_to_datasource_folder, query_path=query_path,
                                              layer=layer_name, dict_params=dict_params))
         filled_query = query_template.substitute(dict_params)
-        return filled_query, query_create_view_gds, dict_params, table_name
+        return filled_query, dict_params, table_name
 
     def compute(self, layer_name, query_name=None):
         query_list, queries, schema_name, folder_path = self._get_query_list(layer_name, query_name=query_name)
         for query in query_list:
-            filled_query, query_create_view_gds, dict_params, table_name = self._filled_query(queries, query,
-                                                                                              folder_path, schema_name,
-                                                                                              layer_name)
+            filled_query, dict_params, table_name = self._filled_query(queries, query,
+                                                                       folder_path, schema_name,
+                                                                       layer_name)
             try:
                 self.dbstream.execute_query(filled_query)
             except Exception as e:
@@ -93,18 +103,19 @@ class DataSource:
                 self.dbstream.execute_query(filled_query)
 
             print(dict_params["TABLE_NAME"] + " created")
-            if query_create_view_gds:
-                self._create_view_gds(layer_name, table_name)
+            if queries[query].get("redshift_beautiful_view"):
+                self._create_redshift_beautiful_view(table_name, schema_name)
+
         return 0
 
     def doc(self, layer_name, query_name=None):
         r = []
         query_list, queries, schema_name, folder_path = self._get_query_list(layer_name, query_name=query_name)
         for query in query_list:
-            filled_query, query_create_view_gds, dict_params, table_name = self._filled_query(queries, query,
-                                                                                              folder_path,
-                                                                                              schema_name,
-                                                                                              layer_name)
+            filled_query, dict_params, table_name = self._filled_query(queries, query,
+                                                                       folder_path,
+                                                                       schema_name,
+                                                                       layer_name)
 
             r = r + _doc_treat_query(filled_query, schema_name, table_name)
         return r
