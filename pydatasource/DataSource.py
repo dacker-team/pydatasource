@@ -44,7 +44,7 @@ class DataSource:
             WHERE table_name='%s' and table_schema='%s'
             ''' % (table_name, schema_name)
         result = self.dbstream.execute_query(query)
-        columns_list = [""" %s as "%s" """ % (c["column_name"], c["column_name"].replace("_", " ")) for c in result]
+        columns_list = [""" "%s" as "%s" """ % (c["column_name"], c["column_name"].replace("_", " ")) for c in result]
         view_name = '%s.%s_%s' % (schema_name, table_name, 'beautiful')
         columns = ','.join(columns_list)
         view_query = '''DROP VIEW IF EXISTS %s ;CREATE VIEW %s as (SELECT %s FROM %s.%s)''' \
