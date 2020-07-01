@@ -21,11 +21,15 @@ def treat_snippet(datasource_path, layer, snippet):
     m = [k[0] for k in mi]
     dict_params = {}
     for i in range(len(m)):
-        try:
-            dict_params.update({m[i].upper(): "'" + snippet.split('__')[i + 1] + "'"})
-        except IndexError:
-            print('No params specify in query')
-            break
+        if len(snippet.split('__')) > 1:
+            try:
+                dict_params.update({m[i].upper(): "'" + snippet.split('__')[i + 1] + "'"})
+            except IndexError:
+                print('No params specify in query')
+                break
+        else:
+            print(m[i].upper())
+            dict_params.update({m[i].upper(): treat_snippet(datasource_path, layer, m[i].upper())})
     return snippet_template.substitute(dict_params)
 
 

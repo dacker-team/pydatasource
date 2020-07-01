@@ -108,6 +108,15 @@ class DataSource:
 
         return 0
 
+    def print_filled_query(self, layer_name, query_name=None):
+        query_list, queries, schema_name, folder_path = self._get_query_list(layer_name, query_name=query_name)
+        for query in query_list:
+            filled_query, dict_params, table_name = self._filled_query(queries, query,
+                                                                       folder_path, schema_name,
+                                                                       layer_name)
+            with open('sandbox_'+layer_name + '_' + query_name + '.sql', 'w') as f:
+                f.write(filled_query)
+
     def doc(self, layer_name, query_name=None):
         r = []
         query_list, queries, schema_name, folder_path = self._get_query_list(layer_name, query_name=query_name)
