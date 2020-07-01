@@ -24,7 +24,7 @@ def _doc_treat_query(filled_query, schema_name, table_name):
 
 
 class DataSource:
-    def __init__(self, dbstream: DBStream, path_to_datasource_folder, schema_prefix=None):
+    def __init__(self, dbstream: DBStream, path_to_datasource_folder, schema_prefix=None, config_name='config'):
         """
 
         :param dbstream:
@@ -33,6 +33,7 @@ class DataSource:
         self.dbstream = dbstream
         self.path_to_datasource_folder = path_to_datasource_folder
         self.schema_prefix = schema_prefix
+        self.config_name = config_name
 
     def _build_folder_path(self, layer_name):
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
@@ -53,7 +54,7 @@ class DataSource:
 
     def _get_query_list(self, layer_name, query_name=None):
         folder_path = self._build_folder_path(layer_name)
-        config = yaml.load(open(folder_path + "config.yaml"), Loader=yaml.FullLoader)
+        config = yaml.load(open(folder_path + self.config_name + ".yaml"), Loader=yaml.FullLoader)
         queries = config.get("query")
         schema_suffix = config.get("schema_suffix") if config.get("schema_suffix") else layer_name
         schema_name = self.schema_prefix + '_' + schema_suffix if self.schema_prefix else schema_suffix
@@ -114,7 +115,7 @@ class DataSource:
             filled_query, dict_params, table_name = self._filled_query(queries, query,
                                                                        folder_path, schema_name,
                                                                        layer_name)
-            with open('sandbox_'+layer_name + '_' + query_name + '.sql', 'w') as f:
+            with open('sandbox_' + layer_name + '_' + query_name + '.sql', 'w') as f:
                 f.write(filled_query)
 
     def doc(self, layer_name, query_name=None):
