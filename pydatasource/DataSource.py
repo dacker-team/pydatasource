@@ -70,6 +70,7 @@ class DataSource:
         view_query = '''DROP VIEW IF EXISTS %s ;CREATE VIEW %s as (SELECT %s FROM %s.%s)''' \
                      % (view_name, view_name, columns, schema_name, table_name)
         self.dbstream.execute_query(view_query)
+        print(view_name + " view created")
 
     def _get_query_list(self, layer_name, query_name=None):
         folder_path = self._build_folder_path(layer_name)
