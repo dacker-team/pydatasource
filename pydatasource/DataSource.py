@@ -52,6 +52,25 @@ class DataSource:
                      % (view_name, view_name, columns, schema_name, table_name)
         self.dbstream.execute_query(view_query)
 
+    def _create_gds_view(self, table_name, schema_name):
+        query = '''
+        SELECT column_name, data_type
+        FROM information_schema.columns
+        WHERE table_name='%s' and table_schema='%s'
+        ''' % (table_name, schema_name)
+        result = self.dbstream.execute_query(query)
+        columns_list = []
+        for c in result:
+            if c["data_type"] in ('timestamp without time zone',):
+                columns_list.append("TO_CHAR(%s,'YYYYMMDD') as %s" % (c["column_name"], c["column_name"]))
+            else:
+                columns_list.append(c["column_name"])
+        view_name = '%s.%s_%s' % (schema_name, table_name, 'gds')
+        columns = ','.join(columns_list)
+        view_query = '''DROP VIEW IF EXISTS %s ;CREATE VIEW %s as (SELECT %s FROM %s.%s)''' \
+                     % (view_name, view_name, columns, schema_name, table_name)
+        self.dbstream.execute_query(view_query)
+
     def _get_query_list(self, layer_name, query_name=None):
         folder_path = self._build_folder_path(layer_name)
         config = yaml.load(open(folder_path + self.config_name + ".yaml"), Loader=yaml.FullLoader)
@@ -106,7 +125,8 @@ class DataSource:
             print(dict_params["TABLE_NAME"] + " created")
             if queries[query].get("redshift_beautiful_view"):
                 self._create_redshift_beautiful_view(table_name, schema_name)
-
+            if queries[query].get("gds"):
+                self._create_gds_view(table_name, schema_name)
         return 0
 
     def print_filled_query(self, layer_name, query_name=None):
