@@ -1,5 +1,6 @@
 import re
 from string import Template
+from dacktool import log_info
 
 
 def detect_snippet(query_path):
@@ -25,10 +26,10 @@ def treat_snippet(datasource_path, layer, snippet):
             try:
                 dict_params.update({m[i].upper(): "'" + snippet.split('__')[i + 1] + "'"})
             except IndexError:
-                print('No params specify in query')
+                log_info('No params specify in query')
                 break
         else:
-            print(m[i].upper())
+            log_info(m[i].upper())
             dict_params.update({m[i].upper(): treat_snippet(datasource_path, layer, m[i].upper())})
     return snippet_template.substitute(dict_params)
 
