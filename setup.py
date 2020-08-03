@@ -15,7 +15,7 @@ setup(
     packages=find_packages(exclude=('tests', 'docs')),
     python_requires='>=3',
     install_requires=[
-        "dbstream>=0.0.19",
+        "dbstream>=0.0.20",
         "PyYAML>=5.1.2",
         "tabulate>=0.8.7",
         "dacktool>=0.0.8"
