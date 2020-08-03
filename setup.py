@@ -5,7 +5,7 @@ with open('README.rst') as f:
 
 setup(
     name='pydatasource',
-    version='0.1.0',
+    version='0.1.1',
     description='Easily manage a dataflow',
     long_description=readme,
     author='Dacker',
