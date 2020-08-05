@@ -108,7 +108,7 @@ class DataSource:
                     else:
                         value = value["production"]
                 if value == "now":
-                    value = str(datetime.datetime.now())[:10]
+                    value = "'" + str(datetime.datetime.now())[:10] + "'"
                 dict_params.update({params.upper(): value})
         dict_params.update(
             treat_all_snippet(
