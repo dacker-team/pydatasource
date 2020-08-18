@@ -183,7 +183,6 @@ class DataSource:
         print("ENVIRONMENTS COMPARISON RESULTS")
         print("=============================")
         for table in tables_list:
-            print("Result of %s" % table)
 
             destination_tables_with_schema = get_destination_tables_with_schema(
                 schema_name=schema_name,
@@ -191,6 +190,10 @@ class DataSource:
                 query_name=table,
                 environment=environment
             )
+
+            print("Result of %s" % destination_tables_with_schema[environment])
+
+            test_where_clause = queries_config[table].get("test_where_clause")
 
             # Prod
             prod_data_types = self.dbstream.get_data_type(
@@ -205,7 +208,8 @@ class DataSource:
                 dbstream=self.dbstream,
                 schema_name=destination_tables_with_schema["production"].split(".")[0],
                 table=destination_tables_with_schema["production"].split(".")[1],
-                data_types=prod_data_types
+                data_types=prod_data_types,
+                test_where_clause=test_where_clause
             )
 
             # Other Environment
@@ -217,7 +221,8 @@ class DataSource:
                 dbstream=self.dbstream,
                 schema_name=destination_tables_with_schema[environment].split(".")[0],
                 table=destination_tables_with_schema[environment].split(".")[1],
-                data_types=env_data_types
+                data_types=env_data_types,
+                test_where_clause=test_where_clause
             )
 
             main_dict = {}
