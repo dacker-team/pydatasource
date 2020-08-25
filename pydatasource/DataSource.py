@@ -264,7 +264,7 @@ class DataSource:
 
     def function_compute(self, layer_name, environment='production'):
         def f():
-            self.compute(layer_name, environment)
+            self.compute(layer_name=layer_name, environment=environment)
 
         return f
 
