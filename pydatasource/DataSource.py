@@ -31,7 +31,7 @@ def get_destination_tables_with_schema(queries_config, query_name, schema_name, 
 
 
 class DataSource:
-    def __init__(self, dbstream: DBStream, path_to_datasource_folder, schema_prefix=None, config_name='config',
+    def __init__(self, dbstream: DBStream, path_to_datasource_folder, schema_prefix=None,
                  layer_type='datasource'):
         """
 
@@ -41,7 +41,6 @@ class DataSource:
         self.dbstream = dbstream
         self.path_to_datasource_folder = path_to_datasource_folder
         self.schema_prefix = schema_prefix
-        self.config_name = config_name
         self.layer_type = layer_type
 
     def _build_folder_path(self, layer_name):
@@ -78,7 +77,7 @@ class DataSource:
 
     def _get_query_list(self, layer_name, query_name=None):
         folder_path = self._build_folder_path(layer_name)
-        config = yaml.load(open(folder_path + ("%s.yaml" % self.config_name)), Loader=yaml.FullLoader)
+        config = yaml.load(open(folder_path + "config.yaml"), Loader=yaml.FullLoader)
         queries = config.get("queries")
         schema_name = config.get("schema_name") if config.get("schema_name") else (self.layer_type + "_" + layer_name)
         schema_name = self.schema_prefix + '_' + schema_name if self.schema_prefix else schema_name
@@ -123,7 +122,10 @@ class DataSource:
         return filled_query
 
     def compute(self, layer_name, query_name=None, environment="production"):
-        query_list, queries_config, schema_name, folder_path = self._get_query_list(layer_name, query_name=query_name)
+        query_list, queries_config, schema_name, folder_path = self._get_query_list(
+            layer_name=layer_name,
+            query_name=query_name
+        )
 
         for query in query_list:
             log_info("Layer: %s | Query started: %s | Environment: %s" % (layer_name, query, environment))
