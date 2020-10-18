@@ -85,7 +85,7 @@ class DataSource:
 
     def _get_query_list(self, layer_name, query_name=None):
         folder_path = self._build_folder_path(layer_name)
-        config = yaml.load(open(folder_path + "config.yaml"), Loader=yaml.FullLoader)
+        config = yaml.load(self.load_file(folder_path + "config.yaml"), Loader=yaml.FullLoader)
         queries = config.get("queries")
         schema_name = config.get("schema_name") if config.get("schema_name") else (self.layer_type + "_" + layer_name)
         schema_name = self.schema_prefix + '_' + schema_name if self.schema_prefix else schema_name
