@@ -31,8 +31,10 @@ def get_destination_tables_with_schema(queries_config, query_name, schema_name, 
 
 
 class DataSource:
-    def __init__(self, dbstream: DBStream, path_to_datasource_folder, schema_prefix=None,
-                 layer_type='datasource'):
+    def __init__(self, dbstream: DBStream, path_to_datasource_folder,
+                 schema_prefix=None,
+                 layer_type='datasource',
+                 loader_function=None):
         """
 
         :param dbstream:
@@ -42,9 +44,15 @@ class DataSource:
         self.path_to_datasource_folder = path_to_datasource_folder
         self.schema_prefix = schema_prefix
         self.layer_type = layer_type
+        self.loader_function = loader_function
 
     def _build_folder_path(self, layer_name):
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
+
+    def load_file(self, path):
+        if self.loader_function is None:
+            return open(path).read()
+        return self.loader_function(path)
 
     def _create_beautiful_view(self, table_name, schema_name):
 
@@ -95,7 +103,7 @@ class DataSource:
             query_template_file_name = query
         query_path = folder_path + "query/" + query_template_file_name + ".sql"
         query_params = query_config.get("query_params")
-        query_template = Template(open(query_path).read())
+        query_template = Template(self.load_file(query_path))
         table_name = query
         dict_params = dict()
         dict_params["TABLE_NAME"] = "%s.%s" % (schema_name, table_name)
@@ -113,7 +121,7 @@ class DataSource:
                 dict_params.update({params.upper(): value})
         dict_params.update(
             treat_all_snippet(
-                datasource_path=self.path_to_datasource_folder,
+                datasource_instance=self,
                 query_path=query_path,
                 layer=layer_name,
                 dict_params=dict_params)
