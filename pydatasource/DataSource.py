@@ -129,7 +129,7 @@ class DataSource:
         filled_query = query_template.substitute(dict_params)
         return filled_query
 
-    def compute(self, layer_name, query_name=None, environment="production"):
+    def compute(self, layer_name, query_name=None, environment="production", comparison_test=True):
         query_list, queries_config, schema_name, folder_path = self._get_query_list(
             layer_name=layer_name,
             query_name=query_name
@@ -181,7 +181,7 @@ class DataSource:
                     table_name=destination_tables_with_schema["production"].split(".")[1],
                 )
 
-        if environment != 'production':
+        if environment != 'production' and comparison_test:
             self.compute_comparison(
                 schema_name=schema_name,
                 tables_list=query_list,
@@ -270,9 +270,9 @@ class DataSource:
             print(tabulate(values, headers=headers, tablefmt="fancy_grid", floatfmt=".2f"))
             print("=============================")
 
-    def function_compute(self, layer_name, environment='production'):
+    def function_compute(self, layer_name, environment='production', comparison_test=True):
         def f():
-            self.compute(layer_name=layer_name, environment=environment)
+            self.compute(layer_name=layer_name, environment=environment, comparison_test=comparison_test)
 
         return f
 
