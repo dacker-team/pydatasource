@@ -170,11 +170,12 @@ class DataSource:
             if environment == 'production':
                 log_info(destination_tables_with_schema["production"] + " created")
 
-            if environment == 'production' and queries_config[query].get("beautiful_view"):
+            if (environment == 'production' or environment == 'staging') and queries_config[query].get("beautiful_view") :
                 self._create_beautiful_view(
-                    schema_name=destination_tables_with_schema["production"].split(".")[0],
-                    table_name=destination_tables_with_schema["production"].split(".")[1],
+                    schema_name=destination_tables_with_schema[environment].split(".")[0],
+                    table_name=destination_tables_with_schema[environment].split(".")[1],
                 )
+
             if environment == 'production' and queries_config[query].get("gds"):
                 self._create_gds_view(
                     schema_name=destination_tables_with_schema["production"].split(".")[0],
