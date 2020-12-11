@@ -2,11 +2,11 @@
 
 ## 0) Introduction
 
-pydatasource allows you to smartly manage the tons of SQL queries that you use to transform your data by cleaning, prepare and aggregate it.
+````pydatasource```` allows you to smartly manage the tons of SQL queries that you use to transform your data by cleaning, prepare and aggregate it.
 
 Queries are written using the Jinja templating framework and managed by config files, supporting many developing environments  
 
-They are grouped into "layers" of transformation, which are folders containing many queries concernaing the same topic and a config file.    
+They are grouped into "layers" of transformation, which are folders containing many queries concerning the same topic and a config file.    
 
 ## 1) Installation
 
@@ -24,7 +24,7 @@ If you use Pycharm, you should add "\\{\\{\w+\\}\\}" and "\\{\\{ \w+ \\}\\}" to 
 
 ## 2) First example
 
-1) Create the folder you want to use to organize your pydatasource project. Here we have called it "datasource". Create a first folders structure as described below. <br>
+1) Create the folder you want to use to organize your ````pydatasource```` project. Here we have called it "datasource". Create a first folders structure as described below. <br>
 Here we added 2 groups (=layers) of 2 queries: "sales" and "customer_support"  
     ```
     datasource
@@ -53,7 +53,7 @@ Here we added 2 groups (=layers) of 2 queries: "sales" and "customer_support"
     );
     ````
 3) Set up your config.yaml file. <br> 
-TABLE_NAME parameter is not mandatory, pydatasource will use the key of the config file as table name by default. 
+TABLE_NAME parameter is not mandatory, ````pydatasource```` will use the key of the config file as table name by default. 
     
    ````yaml
    queries:
