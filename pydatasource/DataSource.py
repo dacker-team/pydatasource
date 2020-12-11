@@ -1,6 +1,7 @@
 import time
-from string import Template
 import datetime
+
+import jinja2
 import yaml
 from dbstream import DBStream
 from tabulate import tabulate
@@ -45,6 +46,7 @@ class DataSource:
         self.schema_prefix = schema_prefix
         self.layer_type = layer_type
         self.loader_function = loader_function
+        self.jinja_env = jinja2.Environment()
 
     def _build_folder_path(self, layer_name):
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
@@ -103,7 +105,6 @@ class DataSource:
             query_template_file_name = query
         query_path = folder_path + "query/" + query_template_file_name + ".sql"
         query_params = query_config.get("query_params")
-        query_template = Template(self.load_file(query_path))
         table_name = query
         dict_params = dict()
         dict_params["TABLE_NAME"] = "%s.%s" % (schema_name, table_name)
@@ -118,7 +119,7 @@ class DataSource:
                         value = value["production"]
                 if value == "now":
                     value = "'" + str(datetime.datetime.now())[:10] + "'"
-                dict_params.update({params.upper(): value})
+                dict_params.update({params: value})
         dict_params.update(
             treat_all_snippet(
                 datasource_instance=self,
@@ -126,8 +127,8 @@ class DataSource:
                 layer=layer_name,
                 dict_params=dict_params)
         )
-        filled_query = query_template.substitute(dict_params)
-        return filled_query
+        template = self.jinja_env.from_string(self.load_file(query_path))
+        return template.render(dict_params)
 
     def compute(self, layer_name, query_name=None, environment="production", comparison_test=True):
         query_list, queries_config, schema_name, folder_path = self._get_query_list(
@@ -156,7 +157,7 @@ class DataSource:
             try:
                 self.dbstream.execute_query(filled_query)
             except Exception as e:
-                if "schema" in str(e):
+                if "schema" in str(e).lower() or "dataset" in str(e).lower():
                     self.dbstream.create_schema(destination_tables_with_schema[environment].split(".")[0])
                     self.dbstream.execute_query(filled_query)
                 else:

@@ -18,7 +18,8 @@ setup(
         "dbstream>=0.0.20",
         "PyYAML>=5.1.2",
         "tabulate>=0.8.7",
-        "dacktool>=0.0.7"
+        "dacktool>=0.0.7",
+        "jinja2>=2.11.2"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
