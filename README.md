@@ -2,11 +2,11 @@
 
 ## 0) Introduction
 
-````pydatasource```` allows you to smartly manage the tons of SQL queries that you use to transform your data by cleaning, prepare and aggregate it.
+````pydatasource```` allows you to smartly manage the tons of SQL queries that you use to transform your data by cleaning, preparing and aggregating it.
 
 Queries are written using the Jinja templating framework and managed by config files, supporting many developing environments  
 
-They are grouped into "layers" of transformation, which are folders containing many queries concerning the same topic and a config file.    
+They are grouped into "layers" of transformation, which are folders ,containing many queries concerning the same topic, and a config file.    
 
 ## 1) Installation
 
@@ -17,8 +17,8 @@ pip install pydatasource
 Then you need to install one of the following packages, depending on the data warehouse type you use:
 
 - AmazonRedshift : ````pip install pyred````
-- Azure SQL Database: ````pip pip install pyzure````
-- Google Cloud BigQuery: ````pip pip install bigquery````
+- Azure SQL Database: ````pip install pyzure````
+- Google Cloud BigQuery: ````pip install bigquery````
 
 If you use Pycharm, you should add "\\{\\{\w+\\}\\}" and "\\{\\{ \w+ \\}\\}" to Tools>Database>User Parameters (in scripts and literals)
 
@@ -47,9 +47,13 @@ Here we added 2 groups (=layers) of 2 queries: "sales" and "customer_support"
    Parameters are not mandatory but you can use them as below.  
    
     ````sql
-    DROP TABLE IF EXISTS {{ TABLE_NAME }};
-    CREATE TABLE {{ TABLE_NAME }} AS (
-       SELECT * FROM {{ TABLE_SOURCE }}
+    DROP TABLE IF EXISTS {{ table_name }};
+    CREATE TABLE {{ table_name }} AS (
+       SELECT 
+           date, 
+           sum(sessions) as total_sessions 
+       FROM {{ table_source }}
+       GROUP BY date
     );
     ````
 3) Set up your config.yaml file. <br> 
@@ -59,7 +63,7 @@ TABLE_NAME parameter is not mandatory, ````pydatasource```` will use the key of 
    queries:
      query_1:
        query_params:
-         table_source: ga.traffic_day   
+         table_source: ga.traffic_day
    ````
 
 4) Initiate a sandbox.py file <br>
@@ -96,6 +100,49 @@ Download the service account secret file (JSON) and remove the private key (we'l
    ````
 
 6) Execute the sandbox.py file , table ````datasource_sales.query_1```` should be created!
+
+
+## 3) Work with a staging environment
+
+Imagine that now query_1.sql is in production, runns every single hour and you would like to change it.
+1) Update the query. All your changes are tracked by git. 
+2) If you want to use another source table, simply update your config file:
+     ````yaml
+       queries:
+         query_1:
+           query_params:
+             table_source: 
+                production: ga.traffic_day
+                staging: ga.traffic_month
+       ````
+3) In your sandbox.py file, tell to ````pydatasource```` to compute in another environment:
+     ````python
+   import logging
+   from bigquery import BigQueryDBStream
+   from googleauthentication import GoogleAuthentication 
+   from pydatasource.DataSource import DataSource 
+   
+   logging.basicConfig(level="INFO")
+    
+   google_auth = GoogleAuthentication(
+        client_secret_file_path="./path_to_client_secret_file.json"
+   ) 
+   datamart = BigQueryDBStream(
+        google_auth=google_auth,     
+        instance_name=None,
+        client_id=None,
+   )
+    
+   d = DataSource(
+        dbstream=datamart,
+        path_to_datasource_folder="./datasource/",
+    )
+   d.compute(layer_name="sales", environment='staging') # environment params must be the same than in the config file
+     ````
+4) Execute sandbox.py, a table comparing staging and prod tables should appear!
+ 
+
+
 
 
 

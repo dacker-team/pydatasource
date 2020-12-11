@@ -107,8 +107,8 @@ class DataSource:
         query_params = query_config.get("query_params")
         table_name = query
         dict_params = dict()
-        dict_params["TABLE_NAME"] = "%s.%s" % (schema_name, table_name)
-        dict_params["TABLE_NAME_TEMP"] = "%s_%s_temp" % (schema_name, table_name)
+        dict_params["table_name"] = "%s.%s" % (schema_name, table_name)
+        dict_params["table_name_temp"] = "%s_%s_temp" % (schema_name, table_name)
         if query_params:
             for params in query_params.keys():
                 value = query_params[params]
