@@ -2,11 +2,11 @@
 
 ## 0) Introduction
 
-````pydatasource```` allows you to smartly manage the tons of SQL queries that you use to transform your data by cleaning, preparing and aggregating it.
+````pydatasource```` allows you to smartly manage the tons of SQL queries that you use to transform your data by cleaning, preparing, and aggregating it.
 
-Queries are written using the Jinja templating framework and managed by config files, supporting many developing environments  
+Queries are written using the Jinja templating framework and managed by config files, supporting multiple developing environments  
 
-They are grouped into "layers" of transformation, which are folders ,containing many queries concerning the same topic, and a config file.    
+They are grouped into "layers" of transformation, which are folders, containing multiple queries concerning the same topic, and a config file.    
 
 ## 1) Installation
 
@@ -20,7 +20,7 @@ Then you need to install one of the following packages, depending on the data wa
 - Azure SQL Database: ````pip install pyzure````
 - Google Cloud BigQuery: ````pip install bigquery````
 
-If you use Pycharm, you should add "\\{\\{\w+\\}\\}" and "\\{\\{ \w+ \\}\\}" to Tools>Database>User Parameters (in scripts and literals)
+<u>Tips:</u> If you use Pycharm, you should add "\\{\\{\w+\\}\\}" and "\\{\\{ \w+ \\}\\}" to Tools>Database>User Parameters (in scripts and literals). In this way, Pycharm will recognize paramaters as paramaters
 
 ## 2) First example
 
@@ -104,7 +104,7 @@ Download the service account secret file (JSON) and remove the private key (we'l
 
 ## 3) Work with a staging environment
 
-Imagine that now query_1.sql is in production, runns every single hour and you would like to change it.
+Imagine that now query_1.sql is in production, runs every single hour and you would like to change it.
 1) Update the query. All your changes are tracked by git. 
 2) If you want to use another source table, simply update your config file:
      ````yaml
