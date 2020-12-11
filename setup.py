@@ -5,7 +5,7 @@ with open('README.rst') as f:
 
 setup(
     name='pydatasource',
-    version='0.2.0', # last version with jinja: 0.2.0 / without jinja: 0.1.11
+    version='0.2.1', # last version with jinja: 0.2.0 / without jinja: 0.1.11
     description='Easily manage a dataflow',
     long_description=readme,
     author='Dacker',
