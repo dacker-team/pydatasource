@@ -14,7 +14,7 @@ They are grouped into "layers" of transformation, which are folders containing m
 pip install pydatasource
 ```` 
 
-Then you need to install one of the following packages, depending on the datawarehouse type you use:
+Then you need to install one of the following packages, depending on the data warehouse type you use:
 
 - AmazonRedshift : ````pip install pyred````
 - Azure SQL Database: ````pip pip install pyzure````
@@ -24,7 +24,8 @@ If you use Pycharm, you should add "\\{\\{\w+\\}\\}" and "\\{\\{ \w+ \\}\\}" to 
 
 ## 2) First example
 
-1) Create the folder you want to use to manage your pydatasource project. Here we use datasource. Create a first folders structure as described here:
+1) Create the folder you want to use to organize your pydatasource project. Here we have called it "datasource". Create a first folders structure as described below. <br>
+Here we added 2 groups (=layers) of 2 queries: "sales" and "customer_support"  
     ```
     datasource
     │
@@ -42,15 +43,17 @@ If you use Pycharm, you should add "\\{\\{\w+\\}\\}" and "\\{\\{ \w+ \\}\\}" to 
                     query_3.sql
     ```
 
-2) Write an SQL query (for instance query_1.sql) such as 
-
+2) Write an SQL query (for instance query_1.sql).<br>
+   Parameters are not mandatory but you can use them as below.  
+   
     ````sql
     DROP TABLE IF EXISTS {{ TABLE_NAME }};
     CREATE TABLE {{ TABLE_NAME }} AS (
-    SELECT * FROM {{ TABLE_SOURCE }}
+       SELECT * FROM {{ TABLE_SOURCE }}
     );
     ````
-3) Set up your config.yaml file:
+3) Set up your config.yaml file. <br> 
+TABLE_NAME parameter is not mandatory, pydatasource will use the key of the config file as table name by default. 
     
    ````yaml
    queries:
@@ -70,11 +73,9 @@ Download the service account secret file (JSON) and remove the private key (we'l
    
    logging.basicConfig(level="INFO")
     
-   # This 
    google_auth = GoogleAuthentication(
         client_secret_file_path="./path_to_client_secret_file.json"
-    )
-    
+   ) 
    datamart = BigQueryDBStream(
         google_auth=google_auth,     
         instance_name=None,
