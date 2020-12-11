@@ -20,7 +20,7 @@ Then you need to install one of the following packages, depending on the data wa
 - Azure SQL Database: ````pip install pyzure````
 - Google Cloud BigQuery: ````pip install bigquery````
 
-<u>Tips:</u> If you use Pycharm, you should add "\\{\\{\w+\\}\\}" and "\\{\\{ \w+ \\}\\}" to Tools>Database>User Parameters (in scripts and literals). In this way, Pycharm will recognize paramaters as paramaters
+<u>Tips:</u> If you use Pycharm, you should add "\\{\\{\w+\\}\\}" and "\\{\\{ \w+ \\}\\}" to Tools>Database>User Parameters (in scripts and literals). In this way, Pycharm will recognize parameters as parameters
 
 ## 2) First example
 
@@ -57,7 +57,7 @@ Here we added 2 groups (=layers) of 2 queries: "sales" and "customer_support"
     );
     ````
 3) Set up your config.yaml file. <br> 
-TABLE_NAME parameter is not mandatory, ````pydatasource```` will use the key of the config file as table name by default. 
+table_name parameter is not mandatory, ````pydatasource```` will use the key of the config file as table name by default. 
     
    ````yaml
    queries:
@@ -115,7 +115,7 @@ Imagine that now query_1.sql is in production, runs every single hour and you wo
                 production: ga.traffic_day
                 staging: ga.traffic_month
        ````
-3) In your sandbox.py file, tell to ````pydatasource```` to compute in another environment:
+3) In your sandbox.py file, tell to ````pydatasource```` to run your query in another environment:
      ````python
    import logging
    from bigquery import BigQueryDBStream
