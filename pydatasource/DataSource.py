@@ -13,12 +13,12 @@ from dacktool import log_info, log_error
 from pydatasource.core.environment_comparison import launch_test
 
 
-def get_destination_tables_with_schema(queries_config, query_name, schema_name, environment):
+def get_destination_tables_with_schema(query_config, query_name, schema_name, environment):
     result = {"production": schema_name + "." + query_name}
     if environment != "production":
         result[environment] = schema_name + "_" + environment + "." + query_name
-    if queries_config[query_name].get("query_params"):
-        table_destination = queries_config[query_name].get("query_params").get("table_destination")
+    if query_config.get("query_params"):
+        table_destination = query_config.get("query_params").get("table_destination")
         if table_destination:
             if environment == "production":
                 if isinstance(table_destination, dict):
@@ -97,8 +97,7 @@ class DataSource:
         query_list = [query_name] if query_name else list(queries.keys())
         return query_list, queries, schema_name, folder_path
 
-    def _filled_query(self, queries_config, query, folder_path, schema_name, layer_name, environment="production"):
-        query_config = queries_config[query]
+    def _filled_query(self, query_config, query, folder_path, schema_name, layer_name, environment="production"):
         if query_config.get("template"):
             query_template_file_name = query_config.get("template")
         else:
@@ -130,16 +129,25 @@ class DataSource:
         template = self.jinja_env.from_string(self.load_file(query_path))
         return template.render(dict_params)
 
-    def compute(self, layer_name, query_name=None, environment="production", comparison_test=True):
+    def compute(self,
+                layer_name,
+                query_name=None,
+                environment="production",
+                comparison_test=True,
+                return_result=False):
         query_list, queries_config, schema_name, folder_path = self._get_query_list(
             layer_name=layer_name,
             query_name=query_name
         )
-
+        result_dict = {}
+        result_dict[layer_name] = {}
         for query in query_list:
+            result_dict[layer_name][query] = {}
+            result_dict[layer_name][query]["started_at"] = str(datetime.datetime.now())
             log_info("Layer: %s | Query started: %s | Environment: %s" % (layer_name, query, environment))
+            query_config = queries_config[query]
             filled_query = self._filled_query(
-                queries_config=queries_config,
+                query_config=query_config,
                 query=query,
                 folder_path=folder_path,
                 schema_name=schema_name if environment == 'production' else (schema_name + "_" + environment),
@@ -148,24 +156,24 @@ class DataSource:
             )
             destination_tables_with_schema = get_destination_tables_with_schema(
                 schema_name=schema_name,
-                queries_config=queries_config,
+                query_config=query_config,
                 query_name=query,
                 environment=environment
             )
             if environment != "production":
                 log_info(filled_query)
             try:
-                self.dbstream.execute_query(filled_query)
+                query_result = self.dbstream.execute_query(filled_query)
             except Exception as e:
                 if "schema" in str(e).lower() or "dataset" in str(e).lower():
                     self.dbstream.create_schema(destination_tables_with_schema[environment].split(".")[0])
-                    self.dbstream.execute_query(filled_query)
+                    query_result = self.dbstream.execute_query(filled_query)
                 else:
                     sec_before_retry = 15
                     log_error(str(e))
                     log_info("Retry in %s s..." % str(sec_before_retry))
                     time.sleep(sec_before_retry)
-                    self.dbstream.execute_query(filled_query)
+                    query_result = self.dbstream.execute_query(filled_query)
 
             # LOG NORMAL
             if environment == 'production':
@@ -182,6 +190,19 @@ class DataSource:
                     table_name=destination_tables_with_schema["production"].split(".")[1],
                 )
 
+            if return_result:
+                if query_config.get("result_type") == "values":
+                    if not query_result:
+                        result_dict[layer_name][query]["data"] = {}
+                    else:
+                        result_dict[layer_name][query]["data"] = query_result[0]
+                else:
+                    if not query_result:
+                        result_dict[layer_name][query]["data"] = []
+                    else:
+                        result_dict[layer_name][query]["data"] = query_result
+            result_dict[layer_name][query]["ended_at"] = str(datetime.datetime.now())
+
         if environment != 'production' and comparison_test:
             self.compute_comparison(
                 schema_name=schema_name,
@@ -189,17 +210,17 @@ class DataSource:
                 queries_config=queries_config,
                 environment=environment)
 
-        return 0
+        return result_dict
 
     def compute_comparison(self, schema_name, tables_list, environment, queries_config):
         print("=============================")
         print("ENVIRONMENTS COMPARISON RESULTS")
         print("=============================")
         for table in tables_list:
-
+            query_config = queries_config[table]
             destination_tables_with_schema = get_destination_tables_with_schema(
                 schema_name=schema_name,
-                queries_config=queries_config,
+                query_config=query_config,
                 query_name=table,
                 environment=environment
             )
@@ -281,7 +302,7 @@ class DataSource:
         query_list, queries, schema_name, folder_path = self._get_query_list(layer_name, query_name=query_name)
         for query in query_list:
             filled_query = self._filled_query(
-                queries_config=queries,
+                query_config=query_config,
                 query=query,
                 folder_path=folder_path,
                 schema_name=schema_name,
@@ -295,8 +316,9 @@ class DataSource:
         r = []
         query_list, queries_config, schema_name, folder_path = self._get_query_list(layer_name, query_name=query_name)
         for query in query_list:
+            query_config = queries_config[query]
             filled_query = self._filled_query(
-                queries_config=queries_config,
+                query_config=query_config,
                 query=query,
                 folder_path=folder_path,
                 schema_name=schema_name,
@@ -307,7 +329,7 @@ class DataSource:
                 filled_query=filled_query,
                 schema_name=schema_name,
                 table_name=get_destination_tables_with_schema(
-                    queries_config=queries_config,
+                    query_config=query_config,
                     query_name=query,
                     schema_name=schema_name,
                     environment=environment
