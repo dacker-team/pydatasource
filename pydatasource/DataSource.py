@@ -1,5 +1,6 @@
 import time
 import datetime
+from dateutil.relativedelta import relativedelta
 
 import jinja2
 import yaml
@@ -29,6 +30,28 @@ def get_destination_tables_with_schema(query_config, query_name, schema_name, en
                 result["production"] = table_destination["production"]
                 result[environment] = table_destination[environment]
     return result
+
+
+def date_range_params(date_range, comparison=False):
+    today = datetime.datetime.today()
+    # today = datetime.date(2020, 2, 29)
+    if date_range == "ytd":
+        start_date = today.strftime("%Y-01-01")
+        end_date = today.strftime("%Y-%m-%d")
+    elif date_range == "lytd":
+        start_date = (today + relativedelta(years=-1)).strftime("%Y-01-01")
+        end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
+    else:
+        return {}
+    if comparison:
+        return {
+            "start_date_comparison": "'%s'" % start_date,
+            "end_date_comparison": "'%s'" % end_date
+        }
+    return {
+        "start_date": "'%s'" % start_date,
+        "end_date": "'%s'" % end_date
+    }
 
 
 class DataSource:
@@ -126,6 +149,12 @@ class DataSource:
                 layer=layer_name,
                 dict_params=dict_params)
         )
+        if query_config.get("daterange"):
+            dict_params.update(date_range_params(query_config.get("daterange")))
+
+        if query_config.get("daterange_comparison"):
+            dict_params.update(date_range_params(query_config.get("daterange_comparison"), comparison=True))
+
         template = self.jinja_env.from_string(self.load_file(query_path))
         return template.render(dict_params)
 
