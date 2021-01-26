@@ -49,6 +49,12 @@ def date_range_params(date_range, comparison, daterange_qualifier):
     elif date_range == "lytd":
         start_date = (today + relativedelta(years=-1)).strftime("%Y-01-01")
         end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
+    elif date_range == "mtd":
+        start_date = today.strftime("%Y-%m-01")
+        end_date = today.strftime("%Y-%m-%d")
+    elif date_range == "lmtd":
+        start_date = (today + relativedelta(months=-1)).strftime("%Y-%m-01")
+        end_date = (today + relativedelta(months=-1)).strftime("%Y-%m-%d")
     else:
         return {}
     if comparison:
