@@ -40,7 +40,7 @@ def date_range_params(date_range, comparison, period):
             try:
                 date_range = date_range[period]
             except KeyError:
-                raise Exception("The daterange params in the config file does not match period ")
+                raise Exception("The period params in the config file does not match period ")
         elif period is None:
             raise Exception("period argument is required due to date_range params in the config file")
     if date_range == "ytd":
@@ -170,16 +170,16 @@ class DataSource:
                 layer=layer_name,
                 dict_params=dict_params)
         )
-        if query_config.get("daterange"):
+        if query_config.get("period"):
             dict_params.update(date_range_params(
-                date_range=query_config.get("daterange"),
+                date_range=query_config.get("period"),
                 comparison=False,
                 period=period)
             )
 
-        if query_config.get("daterange_comparison"):
+        if query_config.get("period_comparison"):
             dict_params.update(date_range_params(
-                date_range=query_config.get("daterange_comparison"),
+                date_range=query_config.get("period_comparison"),
                 period=period,
                 comparison=True)
             )
