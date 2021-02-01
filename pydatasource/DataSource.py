@@ -32,27 +32,30 @@ def get_destination_tables_with_schema(query_config, query_name, schema_name, en
     return result
 
 
-def date_range_params(date_range, comparison, period):
-    today = datetime.datetime.today()
+def date_range_params(period_config, comparison, period, reference_date):
+    if reference_date is None:
+        today = datetime.datetime.today()
+    else:
+        today = datetime.datetime.strptime(reference_date, "%Y-%m-%d")
     # today = datetime.date(2020, 2, 29)
-    if isinstance(date_range, dict):
+    if isinstance(period_config, dict):
         if period is not None:
             try:
-                date_range = date_range[period]
+                period_config = period_config[period]
             except KeyError:
                 raise Exception("The period params in the config file does not match period ")
         elif period is None:
             raise Exception("period argument is required due to date_range params in the config file")
-    if date_range == "ytd":
+    if period_config == "ytd":
         start_date = today.strftime("%Y-01-01")
         end_date = today.strftime("%Y-%m-%d")
-    elif date_range == "lytd":
+    elif period_config == "lytd":
         start_date = (today + relativedelta(years=-1)).strftime("%Y-01-01")
         end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
-    elif date_range == "mtd":
+    elif period_config == "mtd":
         start_date = today.strftime("%Y-%m-01")
         end_date = today.strftime("%Y-%m-%d")
-    elif date_range == "lmtd":
+    elif period_config == "lmtd":
         start_date = (today + relativedelta(months=-1)).strftime("%Y-%m-01")
         end_date = (today + relativedelta(months=-1)).strftime("%Y-%m-%d")
     else:
@@ -141,7 +144,8 @@ class DataSource:
                       schema_name,
                       layer_name,
                       environment="production",
-                      period=None):
+                      period=None,
+                      reference_date=None):
         if query_config.get("template"):
             query_template_file_name = query_config.get("template")
         else:
@@ -172,16 +176,20 @@ class DataSource:
         )
         if query_config.get("period"):
             dict_params.update(date_range_params(
-                date_range=query_config.get("period"),
+                period_config=query_config.get("period"),
                 comparison=False,
-                period=period)
+                period=period,
+                reference_date=reference_date
+            )
             )
 
         if query_config.get("period_comparison"):
             dict_params.update(date_range_params(
-                date_range=query_config.get("period_comparison"),
+                period_config=query_config.get("period_comparison"),
                 period=period,
-                comparison=True)
+                comparison=True,
+                reference_date=reference_date
+            )
             )
 
         template = self.jinja_env.from_string(self.load_file(query_path))
@@ -193,7 +201,8 @@ class DataSource:
                 environment="production",
                 comparison_test=True,
                 return_result=False,
-                period=None):
+                period=None,
+                reference_date=None):
         query_list, queries_config, schema_name, folder_path = self._get_query_list(
             layer_name=layer_name,
             query_name=query_name
@@ -212,7 +221,8 @@ class DataSource:
                 schema_name=schema_name if environment == 'production' else (schema_name + "_" + environment),
                 layer_name=layer_name,
                 environment=environment,
-                period=period
+                period=period,
+                reference_date=reference_date
             )
             destination_tables_with_schema = get_destination_tables_with_schema(
                 schema_name=schema_name,
@@ -361,7 +371,8 @@ class DataSource:
 
         return f
 
-    def print_filled_query(self, layer_name, query_name=None, environment="production", period=None):
+    def print_filled_query(self, layer_name, query_name=None, environment="production", period=None,
+                           reference_date=None):
         query_list, queries, schema_name, folder_path = self._get_query_list(layer_name, query_name=query_name)
         for query in query_list:
             filled_query = self._filled_query(
@@ -371,12 +382,13 @@ class DataSource:
                 schema_name=schema_name,
                 layer_name=layer_name,
                 environment=environment,
-                period=period
+                period=period,
+                reference_date=reference_date
             )
             with open('sandbox_' + layer_name + '_' + query_name + '.sql', 'w') as f:
                 f.write(filled_query)
 
-    def doc(self, layer_name, query_name=None, environment="production", period=None):
+    def doc(self, layer_name, query_name=None, environment="production", period=None, reference_date=None):
         r = []
         query_list, queries_config, schema_name, folder_path = self._get_query_list(layer_name, query_name=query_name)
         for query in query_list:
@@ -388,7 +400,8 @@ class DataSource:
                 schema_name=schema_name,
                 layer_name=layer_name,
                 environment=environment,
-                period=period
+                period=period,
+                reference_date=reference_date
             )
             r = r + document_treat_query(
                 filled_query=filled_query,
