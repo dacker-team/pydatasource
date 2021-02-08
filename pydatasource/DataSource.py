@@ -145,7 +145,8 @@ class DataSource:
                       layer_name,
                       environment="production",
                       period=None,
-                      reference_date=None):
+                      reference_date=None,
+                      query_params_from_function={}):
         if query_config.get("template"):
             query_template_file_name = query_config.get("template")
         else:
@@ -191,9 +192,27 @@ class DataSource:
                 reference_date=reference_date
             )
             )
+        query_params_from_function.update(dict_params)
+        query_string = self.load_file(query_path)
 
-        template = self.jinja_env.from_string(self.load_file(query_path))
-        return template.render(dict_params)
+        if query_config.get("create_clause") != "from_query":
+            if query_config.get("create_clause") == "view":
+                query_string = """
+                drop view if exists {{ table_name }};
+                create view {{ table_name }} as (
+                %s
+                );
+                """ % query_string
+            else:
+                query_string = """
+                drop table if exists {{ table_name }};
+                create table {{ table_name }} as (
+                %s
+                );
+                """ % query_string
+        template = self.jinja_env.from_string(query_string)
+
+        return template.render(query_params_from_function)
 
     def compute(self,
                 layer_name,
@@ -202,7 +221,8 @@ class DataSource:
                 comparison_test=True,
                 return_result=False,
                 period=None,
-                reference_date=None):
+                reference_date=None,
+                query_params={}):
         query_list, queries_config, schema_name, folder_path = self._get_query_list(
             layer_name=layer_name,
             query_name=query_name
@@ -222,7 +242,8 @@ class DataSource:
                 layer_name=layer_name,
                 environment=environment,
                 period=period,
-                reference_date=reference_date
+                reference_date=reference_date,
+                query_params_from_function=query_params
             )
             destination_tables_with_schema = get_destination_tables_with_schema(
                 schema_name=schema_name,
@@ -365,9 +386,18 @@ class DataSource:
             print(tabulate(values, headers=headers, tablefmt="fancy_grid", floatfmt=".2f"))
             print("=============================")
 
-    def function_compute(self, layer_name, environment='production', comparison_test=True):
+    def function_compute(self,
+                         layer_name,
+                         environment='production',
+                         comparison_test=True,
+                         query_params={}):
         def f():
-            self.compute(layer_name=layer_name, environment=environment, comparison_test=comparison_test)
+            self.compute(
+                layer_name=layer_name,
+                environment=environment,
+                comparison_test=comparison_test,
+                query_params=query_params
+            )
 
         return f
 

@@ -141,7 +141,15 @@ Imagine that now query_1.sql is in production, runs every single hour and you wo
      ````
 4) Execute sandbox.py, a table comparing staging and prod tables should appear!
  
+-----------------
 
+Query params are chosen in this order:
+1) from config file
+2) from sql snippet
+3) from function compute params
+
+You can add this kind of args:
+- create_clause: ["in_query", "table", "view"] (default "table")
 
 
 
