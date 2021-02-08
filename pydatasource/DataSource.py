@@ -173,7 +173,10 @@ class DataSource:
                 datasource_instance=self,
                 query_path=query_path,
                 layer=layer_name,
-                dict_params=dict_params)
+                dict_params=dict_params,
+                query_params_from_function=query_params_from_function
+            )
+
         )
         if query_config.get("period"):
             dict_params.update(date_range_params(
@@ -254,17 +257,17 @@ class DataSource:
             if environment != "production":
                 log_info(filled_query)
             try:
-                query_result = self.dbstream.execute_query(filled_query)
+                query_result = self.dbstream.execute_query(filled_query, apply_special_env=False)
             except Exception as e:
                 if "schema" in str(e).lower() or "dataset" in str(e).lower():
                     self.dbstream.create_schema(destination_tables_with_schema[environment].split(".")[0])
-                    query_result = self.dbstream.execute_query(filled_query)
+                    query_result = self.dbstream.execute_query(filled_query, apply_special_env=False)
                 else:
                     sec_before_retry = 15
                     log_error(str(e))
                     log_info("Retry in %s s..." % str(sec_before_retry))
                     time.sleep(sec_before_retry)
-                    query_result = self.dbstream.execute_query(filled_query)
+                    query_result = self.dbstream.execute_query(filled_query, apply_special_env=False)
 
             # LOG NORMAL
             if environment == 'production':

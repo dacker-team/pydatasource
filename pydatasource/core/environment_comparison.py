@@ -14,6 +14,6 @@ def launch_test(dbstream, schema_name, table, data_types, test_where_clause):
         table,
         test_where_clause if test_where_clause else ""
     )
-    result_values = dbstream.execute_query(query)
+    result_values = dbstream.execute_query(query, apply_special_env=False)
     return result_values
 
