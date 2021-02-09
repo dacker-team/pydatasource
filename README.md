@@ -149,7 +149,7 @@ Query params are chosen in this order:
 3) from function compute params
 
 You can add this kind of args:
-- create_clause: ["in_query", "table", "view"] (default "table")
+- create_clause: ["from_query", "table", "view"] (default "table")
 
 
 
