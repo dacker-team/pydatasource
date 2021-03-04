@@ -168,16 +168,7 @@ class DataSource:
                 if value == "now":
                     value = "'" + str(datetime.datetime.now())[:10] + "'"
                 dict_params.update({params: value})
-        dict_params.update(
-            treat_all_snippet(
-                datasource_instance=self,
-                query_path=query_path,
-                layer=layer_name,
-                dict_params=dict_params,
-                query_params_from_function=query_params_from_function
-            )
 
-        )
         if query_config.get("period"):
             dict_params.update(date_range_params(
                 period_config=query_config.get("period"),
@@ -195,10 +186,20 @@ class DataSource:
                 reference_date=reference_date
             )
             )
+        dict_params.update(
+            treat_all_snippet(
+                datasource_instance=self,
+                query_path=query_path,
+                layer=layer_name,
+                dict_params=dict_params,
+                query_params_from_function=query_params_from_function
+            )
+
+        )
         query_params_from_function.update(dict_params)
         query_string = self.load_file(query_path)
 
-        if query_config.get("create_clause") != "from_query":
+        if self.layer_type != "export" and query_config.get("create_clause") != "from_query":
             if query_config.get("create_clause") == "view":
                 query_string = """
                 drop view if exists {{ table_name }};
