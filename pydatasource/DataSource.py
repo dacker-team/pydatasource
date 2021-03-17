@@ -34,7 +34,8 @@ class DataSource:
     def __init__(self, dbstream: DBStream, path_to_datasource_folder,
                  schema_prefix=None,
                  layer_type='datasource',
-                 loader_function=None):
+                 loader_function=None,
+                 update_schema_name_with_env=True):
         """
 
         :param dbstream:
@@ -45,6 +46,7 @@ class DataSource:
         self.schema_prefix = schema_prefix
         self.layer_type = layer_type
         self.loader_function = loader_function
+        self.update_schema_name_with_env = update_schema_name_with_env
 
     def _build_folder_path(self, layer_name):
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
@@ -137,11 +139,16 @@ class DataSource:
 
         for query in query_list:
             log_info("Layer: %s | Query started: %s | Environment: %s" % (layer_name, query, environment))
+            schema_name_filled_query = schema_name
+            if self.update_schema_name_with_env:
+                schema_name_filled_query = schema_name if environment == 'production' else (
+                        schema_name + "_" + environment
+                )
             filled_query = self._filled_query(
                 queries_config=queries_config,
                 query=query,
                 folder_path=folder_path,
-                schema_name=schema_name if environment == 'production' else (schema_name + "_" + environment),
+                schema_name=schema_name_filled_query,
                 layer_name=layer_name,
                 environment=environment
             )
