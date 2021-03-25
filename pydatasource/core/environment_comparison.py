@@ -1,5 +1,5 @@
 
-METRIC_TYPES_LIST = ["integer", "int", "bigint", "double precision", "float", "numeric", "real", "tinyint", "int64"]
+METRIC_TYPES_LIST = ["integer", "int", "bigint", "double precision", "float", "numeric", "real", "tinyint", "int64", "float64"]
 
 
 def launch_test(dbstream, schema_name, table, data_types, test_where_clause):
