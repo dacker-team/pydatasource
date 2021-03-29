@@ -76,7 +76,8 @@ class DataSource:
     def __init__(self, dbstream: DBStream, path_to_datasource_folder,
                  schema_prefix=None,
                  layer_type='datasource',
-                 loader_function=None):
+                 loader_function=None,
+                 jinja_env=None):
         """
 
         :param dbstream:
@@ -87,7 +88,7 @@ class DataSource:
         self.schema_prefix = schema_prefix
         self.layer_type = layer_type
         self.loader_function = loader_function
-        self.jinja_env = jinja2.Environment()
+        self.jinja_env = jinja2.Environment() if jinja_env is None else jinja_env
 
     def _build_folder_path(self, layer_name):
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
