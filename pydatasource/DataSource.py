@@ -77,7 +77,8 @@ class DataSource:
                  schema_prefix=None,
                  layer_type='datasource',
                  loader_function=None,
-                 jinja_env=None):
+                 jinja_env=None,
+                 update_schema_name_with_env=True):
         """
 
         :param dbstream:
@@ -89,6 +90,7 @@ class DataSource:
         self.layer_type = layer_type
         self.loader_function = loader_function
         self.jinja_env = jinja2.Environment() if jinja_env is None else jinja_env
+        self.update_schema_name_with_env = update_schema_name_with_env
 
     def _build_folder_path(self, layer_name):
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
@@ -251,11 +253,16 @@ class DataSource:
             result_dict[layer_name][query]["started_at"] = str(datetime.datetime.now())
             log_info("Layer: %s | Query started: %s | Environment: %s" % (layer_name, query, environment))
             query_config = queries_config[query]
+            schema_name_filled_query = schema_name
+            if self.update_schema_name_with_env:
+                schema_name_filled_query = schema_name if environment == 'production' else (
+                        schema_name + "_" + environment
+                )
             filled_query = self._filled_query(
                 query_config=query_config,
                 query=query,
                 folder_path=folder_path,
-                schema_name=schema_name if environment == 'production' else (schema_name + "_" + environment),
+                schema_name=schema_name_filled_query,
                 layer_name=layer_name,
                 environment=environment,
                 period=period,
