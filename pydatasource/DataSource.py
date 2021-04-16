@@ -212,6 +212,15 @@ class DataSource:
             )
             )
 
+        if query_config.get("daterange"):
+            dict_params.update(date_range_params(
+                period_config=query_config.get("daterange"),
+                comparison=False,
+                period=None,
+                reference_date=reference_date
+            )
+            )
+
         if query_config.get("period_comparison"):
             dict_params.update(date_range_params(
                 period_config=query_config.get("period_comparison"),
