@@ -159,7 +159,7 @@ class DataSource:
         params = {}
         if os.path.isfile(self._build_root_folder_path() + "params.yaml"):
             params = yaml.load(
-                jinja_env.from_string(open(folder_path + "params.yaml").read()).render(),
+                jinja_env.from_string(open(self._build_root_folder_path() + "params.yaml").read()).render(),
                 Loader=yaml.FullLoader)
         if os.path.isfile(folder_path + "params.yaml"):
             params.update(yaml.load(
