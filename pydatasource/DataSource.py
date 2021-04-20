@@ -114,6 +114,9 @@ class DataSource:
     def _build_folder_path(self, layer_name):
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
 
+    def _build_root_folder_path(self):
+        return self.path_to_datasource_folder
+
     def load_file(self, path):
         if self.loader_function is None:
             return open(path).read()
@@ -154,10 +157,14 @@ class DataSource:
         jinja_env = jinja2.Environment()
 
         params = {}
-        if os.path.isfile(folder_path + "params.yaml"):
+        if os.path.isfile(self._build_root_folder_path() + "params.yaml"):
             params = yaml.load(
                 jinja_env.from_string(open(folder_path + "params.yaml").read()).render(),
                 Loader=yaml.FullLoader)
+        if os.path.isfile(folder_path + "params.yaml"):
+            params.update(yaml.load(
+                jinja_env.from_string(open(folder_path + "params.yaml").read()).render(),
+                Loader=yaml.FullLoader))
         config = yaml.load(
             jinja_env.from_string(open(folder_path + "config.yaml").read()).render(params),
             Loader=yaml.FullLoader)
@@ -208,15 +215,6 @@ class DataSource:
                 period_config=query_config.get("period"),
                 comparison=False,
                 period=period,
-                reference_date=reference_date
-            )
-            )
-
-        if query_config.get("daterange"):
-            dict_params.update(date_range_params(
-                period_config=query_config.get("daterange"),
-                comparison=False,
-                period=None,
                 reference_date=reference_date
             )
             )
