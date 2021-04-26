@@ -130,7 +130,7 @@ class DataSource:
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
 
     def _build_root_folder_path(self):
-        return self.path_to_datasource_folder
+        return self.path_to_datasource_folder + 'layers/'
 
     def load_file(self, path):
         if self.loader_function is None:
