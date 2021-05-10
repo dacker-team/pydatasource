@@ -60,6 +60,22 @@ def date_range_params(period_config, comparison, period, reference_date):
         start_date = (today + relativedelta(months=-1)).strftime("%Y-%m-01")
         end_date = (today + relativedelta(months=-1)).strftime("%Y-%m-%d")
 
+    elif period_config == "qtd":
+        month = today.month
+        month_quarter = month - (month - 1) % 3
+        start_date = datetime.date(today.year, month_quarter, 1)
+        start_date = start_date.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
+    elif period_config == "lqtd":
+        start_date = (today + relativedelta(months=-3))
+        month = start_date.month
+        month_quarter = month - (month - 1) % 3
+        start_date = datetime.date(today.year, month_quarter, 1)
+        start_date = start_date.strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(months=-3)).strftime("%Y-%m-%d")
+
+
+
     elif period_config == "yesterday":
         start_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
         end_date = today.strftime("%Y-%m-%d")
