@@ -185,19 +185,17 @@ class DataSource:
     def _get_query_list(self, layer_name, query_name=None):
         folder_path = self._build_folder_path(layer_name)
 
-        jinja_env = jinja2.Environment()
-
         params = {}
         if os.path.isfile(self._build_root_folder_path() + "params.yaml"):
             params = yaml.load(
-                jinja_env.from_string(open(self._build_root_folder_path() + "params.yaml").read()).render(),
+                self.jinja_env.from_string(open(self._build_root_folder_path() + "params.yaml").read()).render(),
                 Loader=yaml.FullLoader)
         if os.path.isfile(folder_path + "params.yaml"):
             params.update(yaml.load(
-                jinja_env.from_string(open(folder_path + "params.yaml").read()).render(),
+                self.jinja_env.from_string(open(folder_path + "params.yaml").read()).render(),
                 Loader=yaml.FullLoader))
         config = yaml.load(
-            jinja_env.from_string(open(folder_path + "config.yaml").read()).render(params),
+            self.jinja_env.from_string(open(folder_path + "config.yaml").read()).render(params),
             Loader=yaml.FullLoader)
 
         queries = config.get("queries")
