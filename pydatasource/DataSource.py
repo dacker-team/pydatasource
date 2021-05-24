@@ -114,7 +114,7 @@ def date_range_params(period_config, comparison, period, reference_date):
 
     elif period_config == "lymtd":
         start_date = (today + relativedelta(years=-1)).strftime("%Y-%m-01")
-        end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%s")
+        end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
 
 
 
