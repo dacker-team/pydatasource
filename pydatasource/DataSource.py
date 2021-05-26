@@ -59,6 +59,69 @@ def date_range_params(period_config, comparison, period, reference_date):
     elif period_config == "lmtd":
         start_date = (today + relativedelta(months=-1)).strftime("%Y-%m-01")
         end_date = (today + relativedelta(months=-1)).strftime("%Y-%m-%d")
+
+    elif period_config == "qtd":
+        month = today.month
+        month_quarter = month - (month - 1) % 3
+        start_date = datetime.date(today.year, month_quarter, 1)
+        start_date = start_date.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
+    elif period_config == "lqtd":
+        start_date = (today + relativedelta(months=-3))
+        month = start_date.month
+        month_quarter = month - (month - 1) % 3
+        start_date = datetime.date(today.year, month_quarter, 1)
+        start_date = start_date.strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(months=-3)).strftime("%Y-%m-%d")
+
+
+
+    elif period_config == "yesterday":
+        start_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
+
+    elif period_config == "day_before_yesterday":
+        start_date = (today + relativedelta(days=-2)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
+
+    elif period_config == "l7d":
+        start_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
+
+    elif period_config == "previous_l7d":
+        start_date = (today + relativedelta(days=-14)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d")
+
+    elif period_config == "l30d":
+        start_date = (today + relativedelta(days=-30)).strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
+
+    elif period_config == "l45d":
+        start_date = (today + relativedelta(days=-45)).strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
+
+    elif period_config == "previous_l30d":
+        start_date = (today + relativedelta(days=-60)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-30)).strftime("%Y-%m-%d")
+
+    elif period_config == "ly":
+        start_date = (today + relativedelta(years=-1)).strftime("%Y-01-01")
+        end_date = today.strftime("%Y-01-01")
+
+    elif period_config == "month_ly":
+        start_date = (today + relativedelta(years=-1)).strftime("%Y-%m-01")
+        end_date = (today + relativedelta(years=-1) + relativedelta(months=1)).strftime("%Y-%m-01")
+
+    elif period_config == "last_month":
+        start_date = (today + relativedelta(months=-1)).strftime("%Y-%m-01")
+        end_date = today.strftime("%Y-%m-01")
+
+    elif period_config == "lymtd":
+        start_date = (today + relativedelta(years=-1)).strftime("%Y-%m-01")
+        end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
+
+
+
     else:
         return {}
     if comparison:
@@ -94,6 +157,9 @@ class DataSource:
 
     def _build_folder_path(self, layer_name):
         return self.path_to_datasource_folder + 'layers/' + layer_name + "/"
+
+    def _build_root_folder_path(self):
+        return self.path_to_datasource_folder + 'layers/'
 
     def load_file(self, path):
         if self.loader_function is None:
@@ -132,15 +198,17 @@ class DataSource:
     def _get_query_list(self, layer_name, query_name=None):
         folder_path = self._build_folder_path(layer_name)
 
-        jinja_env = jinja2.Environment()
-
         params = {}
-        if os.path.isfile(folder_path + "params.yaml"):
+        if os.path.isfile(self._build_root_folder_path() + "params.yaml"):
             params = yaml.load(
-                jinja_env.from_string(open(folder_path + "params.yaml").read()).render(),
+                self.jinja_env.from_string(open(self._build_root_folder_path() + "params.yaml").read()).render(),
                 Loader=yaml.FullLoader)
+        if os.path.isfile(folder_path + "params.yaml"):
+            params.update(yaml.load(
+                self.jinja_env.from_string(open(folder_path + "params.yaml").read()).render(),
+                Loader=yaml.FullLoader))
         config = yaml.load(
-            jinja_env.from_string(open(folder_path + "config.yaml").read()).render(params),
+            self.jinja_env.from_string(open(folder_path + "config.yaml").read()).render(params),
             Loader=yaml.FullLoader)
 
         queries = config.get("queries")
