@@ -297,13 +297,9 @@ class DataSource:
                 %s
                 );
                 """ % query_string
+                query_string = self.dbstream.build_pydatasource_view(query_string)
             else:
-                query_string = """
-                drop table if exists {{ table_name }};
-                create table {{ table_name }} as (
-                %s
-                );
-                """ % query_string
+                query_string = self.dbstream.build_pydatasource_table(query_string)
         template = self.jinja_env.from_string(query_string)
 
         return template.render(query_params_from_function)
