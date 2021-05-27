@@ -290,14 +290,14 @@ class DataSource:
                 %s
                 );
                 """ % query_string
-            if query_config.get("drop_clause") == "cascade":
+            elif query_config.get("drop_clause") == "cascade":
                 query_string = """
                 drop table if exists {{ table_name }} CASCADE ;
                 create table {{ table_name }} as (
                 %s
                 );
                 """ % query_string
-                query_string = self.dbstream.build_pydatasource_view(query_string)
+                query_string = self.dbstream.build_pydatasource_table(query_string)
             else:
                 query_string = self.dbstream.build_pydatasource_table(query_string)
         template = self.jinja_env.from_string(query_string)
