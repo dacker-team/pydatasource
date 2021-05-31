@@ -50,6 +50,9 @@ def date_range_params(period_config, comparison, period, reference_date):
     if period_config == "ytd":
         start_date = today.strftime("%Y-01-01")
         end_date = today.strftime("%Y-%m-%d")
+    elif period_config == "year":
+        start_date = today.strftime("%Y-01-01")
+        end_date = (today + relativedelta(years=1)).strftime("%Y-01-01")
     elif period_config == "lytd":
         start_date = (today + relativedelta(years=-1)).strftime("%Y-01-01")
         end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
@@ -73,6 +76,13 @@ def date_range_params(period_config, comparison, period, reference_date):
         start_date = datetime.date(today.year, month_quarter, 1)
         start_date = start_date.strftime("%Y-%m-%d")
         end_date = (today + relativedelta(months=-3)).strftime("%Y-%m-%d")
+    elif period_config == "quarter":
+        month = today.month
+        month_quarter = month - (month - 1) % 3
+        start_date = datetime.date(today.year, month_quarter, 1)
+        end_date = start_date + relativedelta(months=3)
+        start_date = start_date.strftime("%Y-%m-%d")
+        end_date = end_date.strftime("%Y-%m-%d")
 
 
 
