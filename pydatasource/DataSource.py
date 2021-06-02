@@ -84,8 +84,6 @@ def date_range_params(period_config, comparison, period, reference_date):
         start_date = start_date.strftime("%Y-%m-%d")
         end_date = end_date.strftime("%Y-%m-%d")
 
-
-
     elif period_config == "yesterday":
         start_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
         end_date = today.strftime("%Y-%m-%d")
@@ -130,7 +128,13 @@ def date_range_params(period_config, comparison, period, reference_date):
         start_date = (today + relativedelta(years=-1)).strftime("%Y-%m-01")
         end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
 
+    elif period_config == 'wtd':
+        start_date = (today + relativedelta(days=-today.weekday())).strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
 
+    elif period_config == 'lwtd':
+        start_date = (today + relativedelta(days=-7) + relativedelta(days=-today.weekday())).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d")
 
     else:
         return {}
