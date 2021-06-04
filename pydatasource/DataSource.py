@@ -298,12 +298,7 @@ class DataSource:
 
         if self.layer_type != "export" and query_config.get("create_clause") != "from_query":
             if query_config.get("create_clause") == "view":
-                query_string = """
-                drop view if exists {{ table_name }};
-                create view {{ table_name }} as (
-                %s
-                );
-                """ % query_string
+                query_string = self.dbstream.build_pydatasource_view(query_string)
             elif query_config.get("drop_clause") == "cascade":
                 query_string = self.dbstream.build_pydatasource_table_cascade(query_string)
             else:
