@@ -88,6 +88,10 @@ def date_range_params(period_config, comparison, period, reference_date):
         start_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
         end_date = today.strftime("%Y-%m-%d")
 
+    elif period_config == "today":
+        start_date = today.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
+
     elif period_config == "day_before_yesterday":
         start_date = (today + relativedelta(days=-2)).strftime("%Y-%m-%d")
         end_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
