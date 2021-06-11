@@ -356,7 +356,13 @@ class DataSource:
                 environment=environment
             )
             if environment != "production":
-                log_info(filled_query)
+                file_name = "./tmp/%s/%s.sql" % (layer_name, query)
+                os.makedirs(os.path.dirname(file_name), exist_ok=True)
+                f = open(file_name, "w")
+                f.write(filled_query)
+                f.close()
+                path = os.path.abspath(file_name)
+                log_info("file://%s" % path)
             try:
                 query_result = self.dbstream.execute_query(filled_query, apply_special_env=False)
             except Exception as e:
