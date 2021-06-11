@@ -86,7 +86,7 @@ def date_range_params(period_config, comparison, period, reference_date):
 
     elif period_config == "yesterday":
         start_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
-        end_date = today.strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
 
     elif period_config == "today":
         start_date = today.strftime("%Y-%m-%d")
@@ -94,26 +94,26 @@ def date_range_params(period_config, comparison, period, reference_date):
 
     elif period_config == "day_before_yesterday":
         start_date = (today + relativedelta(days=-2)).strftime("%Y-%m-%d")
-        end_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-2)).strftime("%Y-%m-%d")
 
     elif period_config == "l7d":
-        start_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d")
+        start_date = (today + relativedelta(days=-6)).strftime("%Y-%m-%d")
         end_date = today.strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == "previous_l7d":
-        start_date = (today + relativedelta(days=-14)).strftime("%Y-%m-%d")
+        start_date = (today + relativedelta(days=-13)).strftime("%Y-%m-%d")
         end_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d")
 
     elif period_config == "l30d":
-        start_date = (today + relativedelta(days=-30)).strftime("%Y-%m-%d")
+        start_date = (today + relativedelta(days=-29)).strftime("%Y-%m-%d")
         end_date = today.strftime("%Y-%m-%d")
 
     elif period_config == "l45d":
-        start_date = (today + relativedelta(days=-45)).strftime("%Y-%m-%d")
+        start_date = (today + relativedelta(days=-44)).strftime("%Y-%m-%d")
         end_date = today.strftime("%Y-%m-%d")
 
     elif period_config == "previous_l30d":
-        start_date = (today + relativedelta(days=-60)).strftime("%Y-%m-%d")
+        start_date = (today + relativedelta(days=-59)).strftime("%Y-%m-%d")
         end_date = (today + relativedelta(days=-30)).strftime("%Y-%m-%d")
 
     elif period_config == "ly":
