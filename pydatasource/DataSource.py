@@ -49,26 +49,26 @@ def date_range_params(period_config, comparison, period, reference_date):
             raise Exception("period argument is required due to date_range params in the config file")
     if period_config == "ytd":
         start_date = today.strftime("%Y-01-01")
-        end_date = today.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d 23:59:59")
     elif period_config == "year":
         start_date = today.strftime("%Y-01-01")
-        end_date = (today + relativedelta(years=1)).strftime("%Y-01-01")
+        end_date = today.strftime("%Y-12-31 23:59:59")
     elif period_config == "lytd":
         start_date = (today + relativedelta(years=-1)).strftime("%Y-01-01")
-        end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d 23:59:59")
     elif period_config == "mtd":
         start_date = today.strftime("%Y-%m-01")
         end_date = today.strftime("%Y-%m-%d 23:59:59")
     elif period_config == "lmtd":
         start_date = (today + relativedelta(months=-1)).strftime("%Y-%m-01")
-        end_date = (today + relativedelta(months=-1)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(months=-1)).strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == "qtd":
         month = today.month
         month_quarter = month - (month - 1) % 3
         start_date = datetime.date(today.year, month_quarter, 1)
         start_date = start_date.strftime("%Y-%m-%d")
-        end_date = today.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d 23:59:59")
     elif period_config == "lqtd":
         start_date = (today + relativedelta(months=-3))
         month = start_date.month
@@ -80,13 +80,13 @@ def date_range_params(period_config, comparison, period, reference_date):
         month = today.month
         month_quarter = month - (month - 1) % 3
         start_date = datetime.date(today.year, month_quarter, 1)
-        end_date = start_date + relativedelta(months=3)
+        end_date = start_date + relativedelta(day=1, months=+3, days=-1)
         start_date = start_date.strftime("%Y-%m-%d")
-        end_date = end_date.strftime("%Y-%m-%d")
+        end_date = end_date.strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == "yesterday":
         start_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
-        end_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-1)).strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == "today":
         start_date = today.strftime("%Y-%m-%d")
@@ -102,11 +102,11 @@ def date_range_params(period_config, comparison, period, reference_date):
 
     elif period_config == "previous_l7d":
         start_date = (today + relativedelta(days=-13)).strftime("%Y-%m-%d")
-        end_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == "l30d":
         start_date = (today + relativedelta(days=-29)).strftime("%Y-%m-%d")
-        end_date = today.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == "l45d":
         start_date = (today + relativedelta(days=-44)).strftime("%Y-%m-%d")
@@ -114,31 +114,33 @@ def date_range_params(period_config, comparison, period, reference_date):
 
     elif period_config == "previous_l30d":
         start_date = (today + relativedelta(days=-59)).strftime("%Y-%m-%d")
-        end_date = (today + relativedelta(days=-30)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-30)).strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == "ly":
         start_date = (today + relativedelta(years=-1)).strftime("%Y-01-01")
-        end_date = today.strftime("%Y-01-01")
+        end_date = (today + relativedelta(years=-1)).strftime("%Y-12-31 23:59:59")
 
     elif period_config == "month_ly":
         start_date = (today + relativedelta(years=-1)).strftime("%Y-%m-01")
-        end_date = (today + relativedelta(years=-1) + relativedelta(months=1)).strftime("%Y-%m-01")
+        end_date = ((today + relativedelta(years=-1)) + relativedelta(day=1, months=+1, days=-1)).strftime(
+            "%Y-%m-%d 23:59:59")
 
     elif period_config == "last_month":
         start_date = (today + relativedelta(months=-1)).strftime("%Y-%m-01")
-        end_date = today.strftime("%Y-%m-01")
+        end_date = ((today + relativedelta(months=-1)) + relativedelta(day=1, months=+1, days=-1)).strftime(
+            "%Y-%m-%d 23:59:59")
 
     elif period_config == "lymtd":
         start_date = (today + relativedelta(years=-1)).strftime("%Y-%m-01")
-        end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == 'wtd':
         start_date = (today + relativedelta(days=-today.weekday())).strftime("%Y-%m-%d")
-        end_date = today.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == 'lwtd':
         start_date = (today + relativedelta(days=-7) + relativedelta(days=-today.weekday())).strftime("%Y-%m-%d")
-        end_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d 23:59:59")
 
     else:
         return {}
