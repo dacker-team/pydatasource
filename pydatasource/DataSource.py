@@ -58,7 +58,7 @@ def date_range_params(period_config, comparison, period, reference_date):
         end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d")
     elif period_config == "mtd":
         start_date = today.strftime("%Y-%m-01")
-        end_date = today.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d 23:59:59")
     elif period_config == "lmtd":
         start_date = (today + relativedelta(months=-1)).strftime("%Y-%m-01")
         end_date = (today + relativedelta(months=-1)).strftime("%Y-%m-%d")
@@ -90,7 +90,7 @@ def date_range_params(period_config, comparison, period, reference_date):
 
     elif period_config == "today":
         start_date = today.strftime("%Y-%m-%d")
-        end_date = today.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == "day_before_yesterday":
         start_date = (today + relativedelta(days=-2)).strftime("%Y-%m-%d")
@@ -98,7 +98,7 @@ def date_range_params(period_config, comparison, period, reference_date):
 
     elif period_config == "l7d":
         start_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d")
-        end_date = today.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d 23:59:59")
 
     elif period_config == "previous_l7d":
         start_date = (today + relativedelta(days=-14)).strftime("%Y-%m-%d")
