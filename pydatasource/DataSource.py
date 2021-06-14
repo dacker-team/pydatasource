@@ -1,3 +1,4 @@
+import copy
 import os
 import time
 import datetime
@@ -323,13 +324,14 @@ class DataSource:
                 return_result=False,
                 period=None,
                 reference_date=None,
-                query_params={}):
+                query_params=None):
+        if not query_params:
+            query_params = dict()
         query_list, queries_config, schema_name, folder_path = self._get_query_list(
             layer_name=layer_name,
             query_name=query_name
         )
-        result_dict = {}
-        result_dict[layer_name] = {}
+        result_dict = {layer_name: {}}
         for query in query_list:
             result_dict[layer_name][query] = {}
             result_dict[layer_name][query]["started_at"] = str(datetime.datetime.now())
@@ -340,6 +342,7 @@ class DataSource:
                 schema_name_filled_query = schema_name if environment == 'production' else (
                         schema_name + "_" + environment
                 )
+            query_params_copy = copy.deepcopy(query_params)
             filled_query = self._filled_query(
                 query_config=query_config,
                 query=query,
@@ -349,7 +352,7 @@ class DataSource:
                 environment=environment,
                 period=period,
                 reference_date=reference_date,
-                query_params_from_function=query_params
+                query_params_from_function=query_params_copy
             )
             destination_tables_with_schema = get_destination_tables_with_schema(
                 schema_name=schema_name,
