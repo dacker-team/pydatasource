@@ -249,7 +249,9 @@ class DataSource:
                       environment="production",
                       period=None,
                       reference_date=None,
-                      query_params_from_function={}):
+                      query_params_from_function=None):
+        if query_params_from_function is None:
+            query_params_from_function = dict()
         if query_config.get("template"):
             query_template_file_name = query_config.get("template")
         else:
