@@ -482,7 +482,7 @@ class DataSource:
                 else:
                     val.append("===NEW METRIC===")
                 if main_dict[key].get("env_value") and main_dict[key].get("prod_value"):
-                    diff = main_dict[key].get("env_value") - main_dict[key].get("prod_value")
+                    diff = float(main_dict[key].get("env_value")) - float(main_dict[key].get("prod_value"))
                     if diff == 0:
                         val.append("OK SAME VALUE")
                     else:
