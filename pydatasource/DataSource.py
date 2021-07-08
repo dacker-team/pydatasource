@@ -407,6 +407,26 @@ class DataSource:
                         result_dict[layer_name][query]["data"] = []
                     else:
                         result_dict[layer_name][query]["data"] = query_result
+
+            if query_config.get("tests"):
+                unique_key = query_config.get("tests").get("unique_key")
+                if unique_key:
+                    r = self.dbstream.execute_query(
+                        """
+                        select count(*) as count, count(distinct %s) as count_unique from %s
+                    """ % (unique_key, destination_tables_with_schema[environment])
+                    )
+
+                    if r and r[0]["count"] != r[0]["count_unique"]:
+                        exception = "Duplicate Error on table %s :\nTotal rows: %s\nTotal unique %s: %s "
+                        exception = exception % (
+                            destination_tables_with_schema[environment],
+                            r[0]["count"],
+                            unique_key,
+                            r[0]["count_unique"]
+                        )
+                        raise Exception(exception)
+
             result_dict[layer_name][query]["ended_at"] = str(datetime.datetime.now())
 
         if environment != 'production' and comparison_test:
