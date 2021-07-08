@@ -324,7 +324,8 @@ class DataSource:
                 return_result=False,
                 period=None,
                 reference_date=None,
-                query_params=None):
+                query_params=None,
+                run_tests=True):
         if not query_params:
             query_params = dict()
         query_list, queries_config, schema_name, folder_path = self._get_query_list(
@@ -408,7 +409,7 @@ class DataSource:
                     else:
                         result_dict[layer_name][query]["data"] = query_result
 
-            if query_config.get("tests"):
+            if query_config.get("tests") and run_tests == True:
                 unique_key = query_config.get("tests").get("unique_key")
                 if unique_key:
                     r = self.dbstream.execute_query(
@@ -418,7 +419,7 @@ class DataSource:
                     )
 
                     if r and r[0]["count"] != r[0]["count_unique"]:
-                        exception = "Duplicate Error on table %s :\nTotal rows: %s\nTotal unique %s: %s "
+                        exception = "Duplicate Error on table %s:\nTotal rows: %s\nTotal unique %s: %s "
                         exception = exception % (
                             destination_tables_with_schema[environment],
                             r[0]["count"],
