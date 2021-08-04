@@ -589,15 +589,17 @@ class DataSource:
         return r
 
     def generate_config_prep_file(self, layer, schema_name, table_name):
-        result = {'schema_name': schema_name, 'table_name': table_name}
+        params = {'schema_name': schema_name, 'table_name': table_name}
         query = '''
         select column_name, data_type, character_maximum_length
         from information_schema.columns
         where table_name = '%(table_name)s' and table_schema='%(schema_name)s'
         ORDER BY character_maximum_length DESC;
 
-        ''' % result
-        result['columns'] = self.dbstream.execute_query(query)
+        ''' % params
+        result = {'table_name': '%(schema_name)s.%(table_name)s' % params,
+                  'partition_by': None, 'order_by': None,
+                  'columns': self.dbstream.execute_query(query)}
         file_name = self.path_to_datasource_folder + '/layers/' + layer + '/prep_configs/' + schema_name + '_' + table_name + '.yaml'
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
         f = open(file_name, "w")
