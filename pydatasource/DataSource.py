@@ -263,6 +263,14 @@ class DataSource:
         dict_params = dict()
         dict_params["table_name"] = "%s.%s" % (schema_name, table_name)
         dict_params["table_name_temp"] = "%s_%s_temp" % (schema_name, table_name)
+
+        if query_config.get("prep_clause"):
+            if query_config.get("prep_clause").get('type') and query_config.get("prep_clause").get(
+                    'type') == 'deduplicate':
+                prep_config_file_name = query_config.get("prep_clause").get('type').get('prep_config')
+                prep_config = self.get_params_from_prep_configs(layer_name, prep_config_file_name)
+                dict_params.update(prep_config)
+
         if query_params:
             for params in query_params.keys():
                 value = query_params[params]
@@ -597,3 +605,9 @@ class DataSource:
         f.close()
         path = os.path.abspath(file_name)
         log_info("file://%s" % path)
+
+    def get_params_from_prep_configs(self, layer, config_file_name):
+        file_name = self.path_to_datasource_folder + 'layers/' + layer + '/prep_configs/' + config_file_name + '.yaml'
+        f = open(file_name, "r")
+        context = yaml.load(f.read(), Loader=yaml.FullLoader)
+        return context
