@@ -267,7 +267,7 @@ class DataSource:
         if query_config.get("prep_clause"):
             if query_config.get("prep_clause").get('type') and query_config.get("prep_clause").get(
                     'type') == 'deduplicate':
-                prep_config_file_name = query_config.get("prep_clause").get('type').get('prep_config')
+                prep_config_file_name = query_config.get("prep_clause").get('prep_config')
                 prep_config = self.get_params_from_prep_configs(layer_name, prep_config_file_name)
                 dict_params.update(prep_config)
 
