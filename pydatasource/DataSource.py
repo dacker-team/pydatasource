@@ -597,7 +597,7 @@ class DataSource:
         ORDER BY character_maximum_length DESC;
 
         ''' % params
-        result = {'table_name': '%(schema_name)s.%(table_name)s' % params,
+        result = {'base_table_name': '%(schema_name)s.%(table_name)s' % params,
                   'partition_by': None, 'order_by': None,
                   'columns': self.dbstream.execute_query(query)}
         file_name = self.path_to_datasource_folder + '/layers/' + layer + '/prep_configs/' + schema_name + '_' + table_name + '.yaml'
