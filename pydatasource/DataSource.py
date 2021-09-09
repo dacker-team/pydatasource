@@ -439,6 +439,8 @@ class DataSource:
                             r[0]["count_unique"]
                         )
                         raise Exception(exception)
+                    else:
+                        log_info("No-duplicates test: passed!")
 
             result_dict[layer_name][query]["ended_at"] = str(datetime.datetime.now())
 
