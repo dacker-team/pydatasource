@@ -552,7 +552,7 @@ class DataSource:
                 environment=environment,
                 comparison_test=comparison_test,
                 query_params=query_params,
-                params_file_arg=params_file_arg,
+                params_file_arg=params_file_arg
             )
 
         return f
