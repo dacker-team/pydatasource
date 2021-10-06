@@ -220,17 +220,17 @@ class DataSource:
         self.dbstream.create_view_from_columns(view_name, columns, schema_name, table_name)
         log_info(view_name + " view created")
 
-    def _get_query_list(self, layer_name, query_name=None):
+    def _get_query_list(self, layer_name, query_name=None, params_file_args=None):
         folder_path = self._build_folder_path(layer_name)
 
         params = {}
         if os.path.isfile(self._build_root_folder_path() + "params.yaml"):
             params = yaml.load(
-                self.jinja_env.from_string(open(self._build_root_folder_path() + "params.yaml").read()).render(),
+                self.jinja_env.from_string(open(self._build_root_folder_path() + "params.yaml").read()).render(params_file_args),
                 Loader=yaml.FullLoader)
         if os.path.isfile(folder_path + "params.yaml"):
             params.update(yaml.load(
-                self.jinja_env.from_string(open(folder_path + "params.yaml").read()).render(),
+                self.jinja_env.from_string(open(folder_path + "params.yaml").read()).render(params_file_args),
                 Loader=yaml.FullLoader))
         config = yaml.load(
             self.jinja_env.from_string(open(folder_path + "config.yaml").read()).render(params),
@@ -337,12 +337,16 @@ class DataSource:
                 period=None,
                 reference_date=None,
                 query_params=None,
-                run_tests=True):
+                run_tests=True,
+                params_file_arg=None):
         if not query_params:
             query_params = dict()
+        if not params_file_arg:
+            params_file_arg = dict()
         query_list, queries_config, schema_name, folder_path = self._get_query_list(
             layer_name=layer_name,
-            query_name=query_name
+            query_name=query_name,
+            params_file_args=params_file_arg
         )
         result_dict = {layer_name: {}}
         for query in query_list:
@@ -540,13 +544,15 @@ class DataSource:
                          layer_name,
                          environment='production',
                          comparison_test=True,
-                         query_params={}):
+                         query_params={},
+                         params_file_arg={}):
         def f():
             self.compute(
                 layer_name=layer_name,
                 environment=environment,
                 comparison_test=comparison_test,
-                query_params=query_params
+                query_params=query_params,
+                params_file_arg=params_file_arg
             )
 
         return f
