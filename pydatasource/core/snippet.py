@@ -5,8 +5,8 @@ from dacktool import log_info
 
 def detect_snippet(datasource_instance, query_path):
     query = datasource_instance.load_file(query_path)
-    m = re.findall(r"\$(.*?)( |$)", query)
-    return [k[0] for k in m]
+    m = re.findall(r"\{\{ (.*?) \}\}", query)
+    return [k for k in m]
 
 
 def treat_snippet(datasource_instance, layer, snippet):
@@ -17,9 +17,12 @@ def treat_snippet(datasource_instance, layer, snippet):
         snippet_template = Template(datasource_instance.load_file(path))
     except FileNotFoundError:
         path = datasource_path + 'sql_snippet/' + snippet_name + '.sql'
-        snippet_template = Template(datasource_instance.load_file(path))
+        try:
+            snippet_template = Template(datasource_instance.load_file(path))
+        except FileNotFoundError:
+            return 1
     snippet_str = datasource_instance.load_file(path)
-    mi = re.findall(r"\$(.*?)( |$)", str(snippet_str))
+    mi = re.findall(r"\{\{ (.*?) \}\}", str(snippet_str))
     m = [k[0] for k in mi]
     dict_params = {}
     for i in range(len(m)):
@@ -41,11 +44,12 @@ def treat_snippet(datasource_instance, layer, snippet):
     return snippet_template.substitute(dict_params)
 
 
-def treat_all_snippet(datasource_instance, query_path, layer, dict_params):
+def treat_all_snippet(datasource_instance, query_path, layer, dict_params, query_params_from_function):
     dict_result = {}
     for snippet in detect_snippet(datasource_instance=datasource_instance, query_path=query_path):
-        if snippet in dict_params or "." in snippet or "[0" in snippet:
+        if snippet in dict_params or snippet in query_params_from_function or "." in snippet or "[0" in snippet:
             continue
         snippet_code = treat_snippet(datasource_instance=datasource_instance, layer=layer, snippet=snippet)
-        dict_result.update({snippet: snippet_code})
+        if snippet_code != 1:
+            dict_result.update({snippet: snippet_code})
     return dict_result

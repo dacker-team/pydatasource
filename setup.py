@@ -5,7 +5,7 @@ with open('README.rst') as f:
 
 setup(
     name='pydatasource',
-    version='0.1.12',
+    version='0.2.54',  # last version with jinja: 0.2.54 / without jinja: 0.1.11
     description='Easily manage a dataflow',
     long_description=readme,
     author='Dacker',
@@ -15,10 +15,11 @@ setup(
     packages=find_packages(exclude=('tests', 'docs')),
     python_requires='>=3',
     install_requires=[
-        "dbstream>=0.0.20",
+        "dbstream>=0.1.2",
         "PyYAML>=5.1.2",
         "tabulate>=0.8.7",
-        "dacktool>=0.0.7"
+        "dacktool>=0.0.7",
+        "jinja2>=2.11.2"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
