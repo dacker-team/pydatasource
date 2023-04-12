@@ -105,6 +105,10 @@ def date_range_params(period_config, comparison, period, reference_date):
         start_date = (today + relativedelta(days=-13)).strftime("%Y-%m-%d")
         end_date = (today + relativedelta(days=-7)).strftime("%Y-%m-%d 23:59:59")
 
+    elif period_config == "l7d_ly":
+        start_date = (today + relativedelta(days=-6, years=-1)).strftime("%Y-%m-%d")
+        end_date = (today + relativedelta(years=-1)).strftime("%Y-%m-%d 23:59:59")
+
     elif period_config == "l30d":
         start_date = (today + relativedelta(days=-29)).strftime("%Y-%m-%d")
         end_date = today.strftime("%Y-%m-%d 23:59:59")
