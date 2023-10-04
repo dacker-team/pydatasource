@@ -134,6 +134,10 @@ def date_range_params(period_config, comparison, period, reference_date):
         end_date = ((today + relativedelta(years=-1)) + relativedelta(day=1, months=+1, days=-1)).strftime(
             "%Y-%m-%d 23:59:59")
 
+    elif period_config == "month":
+        start_date = today.strftime("%Y-%m-01")
+        end_date = (today + relativedelta(day=1, months=+1, days=-1)).strftime("%Y-%m-%d 23:59:59")
+
     elif period_config == "last_month":
         start_date = (today + relativedelta(months=-1)).strftime("%Y-%m-01")
         end_date = ((today + relativedelta(months=-1)) + relativedelta(day=1, months=+1, days=-1)).strftime(
